@@ -1,10 +1,14 @@
-import { NativeModules } from "react-native";
+import { NativeModules, Platform } from "react-native";
 import { WakeLockModule } from "./types";
 import { useEffect } from "react";
 
-const WakeLockNativeModule: WakeLockModule = NativeModules.RNWakeLock;
+const WakeLockNativeModule: WakeLockModule = NativeModules.RNWakeLock || {
+   setWakeLock: async () => { return true; },
+   releaseWakeLock: async () => { return true; },
+   isWakeLocked: async () => { return false; }
+};
 
-if (!WakeLockNativeModule) {
+if (!NativeModules.RNWakeLock && Platform.OS === "android") {
   throw new Error(`react-native-android-wake-lock: Native Module is null. Steps to fix:
 • Run \`react-native-link react-native-android-wake-lock\` in the project root
 • Rebuild and run the app
